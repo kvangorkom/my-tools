@@ -70,11 +70,37 @@ def han2d(shape, fraction=1./np.sqrt(2), normalize=False):
     window[radial > fraction * radial.max()] = 0.
     return window
 
-def radial_psd(surface, window, sampling=1., nbins=200, return_2dpsd=False):
+def radial_psd(surface, window=None, sampling=1., nbins=200, return_2dpsd=False):
     '''
-    See https://www.mathworks.com/matlabcentral/fileexchange/54297-radially-averaged-surface-roughness-topography-power-spectrum--psd-
-    
+    Compute the 2D PSD of a surface and return the radial average
+
+    Units: [z units]^2 / freq^2
+
+    Parameters:
+        surface : 2D array-like
+            Surface to find PSD of
+        window : 2d array-like, opt.
+            2D window to minimize spectral leakage (for
+            example, the output of han2d)
+        sampling : float, opt.
+            Pixel sampling [physical surface width / n pixels]
+        nbins : int
+            Number of radial bins for the radial average. This
+            should be a factor of several smaller than surface
+            shape
+        return_2dpsd : bool, opt. (Default: False)
+            Return the 2D PSD instead of the radial average?
+
+    Returns:
+        frequency : 1D array-like
+            radial frequencies at which the PSD is reported
+        psd_ravg : 1D array-like
+            Radially-averaged PSD values [z units^2] / freq^2 
     '''
+
+    if window is None:
+        window = np.ones_like(surface)
+
     # frequency spacing
     ny, nx = surface.shape
     deltaky = 1. / sampling / ny
@@ -112,6 +138,11 @@ def radial_psd(surface, window, sampling=1., nbins=200, return_2dpsd=False):
     return bins, psd_ravg
 
 def get_radial_dist(shape, scaleyx=(1.0, 1.0)):
+    '''
+    Compute the radial separation of each pixel
+    from the center of a 2D array, and optionally 
+    scale in x and y.
+    '''
     indices = np.indices(shape)
     cenyx = ( (shape[0] - 1) / 2., (shape[1] - 1)  / 2.)
     radial = np.sqrt( (scaleyx[0]*(indices[0] - cenyx[0]))**2 + (scaleyx[1]*(indices[1] - cenyx[1]))**2 )
