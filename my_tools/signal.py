@@ -111,8 +111,8 @@ def radial_psd(surface, window=None, sampling=1., nbins=200, return_2dpsd=False)
     
     # brute force window normalization factor by matching
     # rms values before and after window (in spatial domain)
-    surface_rms = analysis.rms(surface)
-    windowed_rms = analysis.rms(surface * window)
+    surface_rms = rms(surface)
+    windowed_rms = rms(surface * window)
     factor = surface_rms / windowed_rms * 1. / (nx * ny)
     fft2d *= factor
 
@@ -147,3 +147,6 @@ def get_radial_dist(shape, scaleyx=(1.0, 1.0)):
     cenyx = ( (shape[0] - 1) / 2., (shape[1] - 1)  / 2.)
     radial = np.sqrt( (scaleyx[0]*(indices[0] - cenyx[0]))**2 + (scaleyx[1]*(indices[1] - cenyx[1]))**2 )
     return radial
+
+def rms(image,mask=None):
+    return np.sqrt(np.mean(image[mask]**2))
