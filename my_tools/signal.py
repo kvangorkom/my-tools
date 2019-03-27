@@ -70,7 +70,7 @@ def han2d(shape, fraction=1./np.sqrt(2), normalize=False):
     window[radial > fraction * radial.max()] = 0.
     return window
 
-def radial_psd(surface, window=None, sampling=1., nbins=200, return_2dpsd=False):
+def radial_psd(surface, window=None, sampling=1., nbins=200, return_2dpsd=False, mask=None):
     '''
     Compute the 2D PSD of a surface and return the radial average
 
@@ -111,8 +111,8 @@ def radial_psd(surface, window=None, sampling=1., nbins=200, return_2dpsd=False)
     
     # brute force window normalization factor by matching
     # rms values before and after window (in spatial domain)
-    surface_rms = rms(surface)
-    windowed_rms = rms(surface * window)
+    surface_rms = rms(surface[mask])
+    windowed_rms = rms( (surface * window)[mask] )
     factor = surface_rms / windowed_rms * 1. / (nx * ny)
     fft2d *= factor
 
