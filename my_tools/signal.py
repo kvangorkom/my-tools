@@ -111,8 +111,8 @@ def radial_psd(surface, window=None, sampling=1., nbins=200, return_2dpsd=False,
     
     # brute force window normalization factor by matching
     # rms values before and after window (in spatial domain)
-    surface_rms = rms(surface[mask])
-    windowed_rms = rms( (surface * window)[mask] )
+    surface_rms = rms(surface, mask)
+    windowed_rms = rms(surface * window)
     factor = surface_rms / windowed_rms * 1. / (nx * ny)
     fft2d *= factor
 
